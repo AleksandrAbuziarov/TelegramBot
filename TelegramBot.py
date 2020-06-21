@@ -20,14 +20,13 @@ app = Flask(__name__)
 url = "opc.tcp://10.4.37.2:4840"
 client = Client(url)
 # Paramms Telegram
-# https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/setWebhook?url=https://cf10c57a.ngrok.io/
-CHANNEL_NAME1 = '@MILKOMTEST'
-apihelper.proxy = {'https': 'https://NsY4C3:ZPYqX7@186.179.51.64:8000'}
-CHANNEL_NAME_PET1 = '@Milkom_PET1'
-CHANNEL_NAME_PET2 = '@Milkom_PET2'
-CHANNEL_NAME_PET3 = '@Alarm_PET'
-token = '1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo'
-bot = telebot.TeleBot('1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo')
+CHANNEL_NAME1 = '@Chanel1'
+apihelper.proxy = {'https': 'Myproxy'}
+CHANNEL_NAME_PET1 = '@Channel_PET1'
+CHANNEL_NAME_PET2 = '@Channel_PET2'
+CHANNEL_NAME_PET3 = '@Channel_PET3'
+token = 'Mytoken'
+bot = telebot.TeleBot(token)
 
 retry_strategy = Retry(
     total=3,
@@ -67,7 +66,7 @@ def get_text_messages_line1(OEE, Performance, Quality, Availability, DateStart, 
     try:
         if ValueChange:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage"
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET1, text="ПЭТ 1:"'''
 "Оператор:''' + " " + str(User_Line1) + '''
 "Начало смены:''' + " " + str(DateStart) + ''' 
@@ -159,7 +158,7 @@ def help_line2(Help_OPC_Line2):
     try:
         if Help_OPC_Line2:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
                                     text="На ПЭТ 2 произошла АВАРИЯ! Оператору требуется помощь инженера!")
             requests.post(url, timeout=1, proxies=apihelper.proxy)
@@ -192,7 +191,7 @@ def downtime_line1(Downtime_OPC_Line1, IndexDowntimeMachine_OPC_Line1, count_lin
     try:
         if Downtime_OPC_Line1 and count_line1 == 1:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET3,
                                     text="На ПЭТ 1 произошла авария" + " " + str(
                                         machine) + " " + "(длительность аварии 1 минута)")
@@ -200,7 +199,7 @@ def downtime_line1(Downtime_OPC_Line1, IndexDowntimeMachine_OPC_Line1, count_lin
 
         elif Downtime_OPC_Line1 and count_line1 == 15:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
                                     text="На ПЭТ 1 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии 15 минут)")
@@ -208,14 +207,14 @@ def downtime_line1(Downtime_OPC_Line1, IndexDowntimeMachine_OPC_Line1, count_lin
 
         elif Downtime_OPC_Line1 and count_line1 == 30:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
                                     text="На ПЭТ 1 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии 30 минут)")
             requests.post(url, timeout=1, proxies=apihelper.proxy)
         elif Downtime_OPC_Line1 and count_line1 == 60:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
                                     text="На ПЭТ 1 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительсноть аварии 60 минут)")
@@ -223,7 +222,7 @@ def downtime_line1(Downtime_OPC_Line1, IndexDowntimeMachine_OPC_Line1, count_lin
 
         elif Downtime_OPC_Line1 and count_line1 > 60:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
                                     text="На ПЭТ 1 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии более 60 минут)")
@@ -259,7 +258,7 @@ def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_lin
     try:
         if Downtime_OPC_Line2 and count_line2 == 1:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET3,
                                     text="На ПЭТ 2 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии 1 минута)")
@@ -267,7 +266,7 @@ def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_lin
 
         elif Downtime_OPC_Line2 and count_line2 == 15:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
                                     text="На ПЭТ 2 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии 15 минут)")
@@ -275,14 +274,14 @@ def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_lin
 
         elif Downtime_OPC_Line2 and count_line2 == 30:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
                                     text="На ПЭТ 2 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительсноть аварии 30 минут)")
             requests.post(url, timeout=1, proxies=apihelper.proxy)
         elif Downtime_OPC_Line2 and count_line2 == 60:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
                                     text="На ПЭТ 2 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии 60 минут)")
@@ -290,7 +289,7 @@ def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_lin
 
         elif Downtime_OPC_Line2 and count_line2 > 60:
             method = "sendMessage"
-            url = 'https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/sendMessage'
+            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
             data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
                                     text="На ПЭТ 2 поизошла авария" + " " + str(
                                         machine) + " " + "(Длительность аварии более 60 минут)")
@@ -317,8 +316,6 @@ def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_lin
 def receive_update():
     if request.method == "POST":
         print(request.json)
-        # chat_id = request.json["message"]["chat"]["id"]
-        # weather = 25
         send_message()
     return {"ok": True}
 
@@ -538,13 +535,13 @@ class new_value():
                     api_response = api_result.json()
                     print (api_response)
                     if api_response['tunnels'][0]['proto'] == "https":
-                        setebhook_https = "https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/setWebhook?url=" + (
+                        setebhook_https = "https://api.telegram.org/bot{bot}/setWebhook?url=" + (
                         api_response['tunnels'][0]['public_url'])
                         print(api_response['tunnels'][0]['proto'])
                         requests.post(setebhook_https, timeout=5, proxies=apihelper.proxy)
                         print (setebhook_https)
                     else:
-                        setebhook_http = "https://api.telegram.org/bot1068384211:AAHWnsTAtDL90H7vU6CW_CryuZRaqIqgfPo/setWebhook?url=" + (
+                        setebhook_http = "https://api.telegram.org/bot{bot}/setWebhook?url=" + (
                             api_response['tunnels'][1]['public_url'])
                         print(api_response['tunnels'][0]['proto'])
                         requests.post(setebhook_http, timeout=5, proxies=apihelper.proxy)
