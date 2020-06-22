@@ -11,46 +11,47 @@ from threading import Thread
 import logging
 import time
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from  urllib3.util.retry import Retry
 from pyngrok import ngrok
-
 app = Flask(__name__)
+
+#retry
+retry_strategy = Retry(
+                total=3,
+                status_forcelist=[429, 500, 502, 503, 504, 522, 400],
+                method_whitelist=["POST", "GET"]
+            )
+adapter = HTTPAdapter(max_retries=retry_strategy)
+http = requests.Session()
+http.mount("https://", adapter)
+http.mount("http://", adapter)
 
 # Paramms OPC
 url = "opc.tcp://10.4.37.2:4840"
 client = Client(url)
 # Paramms Telegram
-CHANNEL_NAME1 = '@Chanel1'
-apihelper.proxy = {'https': 'Myproxy'}
-CHANNEL_NAME_PET1 = '@Channel_PET1'
-CHANNEL_NAME_PET2 = '@Channel_PET2'
-CHANNEL_NAME_PET3 = '@Channel_PET3'
-token = 'Mytoken'
-bot = telebot.TeleBot(token)
+CHANNEL_NAME1 = '@YouChannel'
+apihelper.proxy = {'https': 'https://login:pass@Ip:port'}
+CHANNEL_NAME_PET1 = '@YouChannel'
+CHANNEL_NAME_PET2 = '@YouChannel'
+CHANNEL_NAME_PET3 = '@YouChannel'
+token = 'YouToken'
+bot = telebot.TeleBot('YouToken')
 
-retry_strategy = Retry(
-    total=3,
-    status_forcelist=[429, 500, 502, 503, 504],
-    method_whitelist=["POST", "GET"]
-)
-adapter = HTTPAdapter(max_retries=retry_strategy)
-http = requests.Session()
-http.mount("https://", adapter)
-http.mount("http://", adapter)
 # logger
 if __name__ == '__main__':
     # Get rid of spam in the logs from the requests library
     logging.getLogger('requests').setLevel(logging.CRITICAL)
     # Logger setup
     logging.basicConfig(format='[%(asctime)s] %(filename)s:%(lineno)d %(levelname)s - %(message)s', level=logging.ERROR,
-                        filename='Error_TelegramBotV1_4.log', datefmt='%d.%m.   %Y %H:%M:%S')
+                        filename='Error_TelegramBot_V1.log', datefmt='%d.%m.   %Y %H:%M:%S')
 
 def send_message():
     try:
         method = "sendMessage"
-        url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-        data = bot.send_message(chat_id=CHANNEL_NAME1, text="Тест связи")
-        requests.post(url, timeout=0.4, proxies=apihelper.proxy)
+        url = f"https://api.telegram.org/bot{token}/{method}"
+        data = {"chat_id":CHANNEL_NAME1, "text":"Тест связи"}
+        http.post(url, timeout=1, data=data)
     except requests.Timeout:
         pass
     except requests.ConnectionError:
@@ -58,7 +59,6 @@ def send_message():
     except Exception as e:
         print(e)
         pass
-
 
 # Send Message
 @bot.message_handler(content_types=['text'])
@@ -66,117 +66,89 @@ def get_text_messages_line1(OEE, Performance, Quality, Availability, DateStart, 
     try:
         if ValueChange:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET1, text="ПЭТ 1:"'''
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET1, "text":"ПЭТ 1:"'''
 "Оператор:''' + " " + str(User_Line1) + '''
 "Начало смены:''' + " " + str(DateStart) + ''' 
 Окончание смены:''' + " " + str(DateEnd) + '''      
 OEE''' + " " + "=" + " " + str(OEE) + '''
 Performance''' + " " + "=" + " " + str(Performance) + '''
 Quality''' + " " + "=" + " " + str(Quality) + '''
-Availability''' + " " + "=" + " " + str(Availability))
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
-
+Availability''' + " " + "=" + " " + str(Availability)}
+            http.post(url, timeout=1, data=data) #, proxies = apihelper.proxy
     except requests.Timeout:
         pass
-       # return get_text_messages_line1(OEE, Performance, Quality, Availability, DateStart, DateEnd, 1, User_Line1)
     except requests.ConnectionError:
         logging.error("Error send")
-        print ("Error")
         pass
-        #return get_text_messages_line1(OEE, Performance, Quality, Availability, DateStart, DateEnd, 1, User_Line1)
     except Exception as e:
         logging.error(e)
         print(e)
         pass
-        #return get_text_messages_line1(OEE, Performance, Quality, Availability, DateStart, DateEnd, 1, User_Line1)
-
 
 def get_text_messages_line2(OEE_Line2, Performance_OPC_Line2, Quality_OPC_Line2, Availability_Line2, DateStart_Line2,
                             DateEnd_Line2, ValueChange_Line2, User_Line2):
     try:
         if ValueChange_Line2:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET2, text="ПЭТ 2:"'''
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET2, "text":"ПЭТ 2:"'''
 "Оператор:''' + " " + str(User_Line2) + '''
 "Начало смены:''' + " " + str(DateStart_Line2) + ''' 
 Окончание смены:''' + " " + str(DateEnd_Line2) + '''      
 OEE''' + " " + "=" + " " + str(OEE_Line2) + '''
 Performance''' + " " + "=" + " " + str(Performance_OPC_Line2) + '''
 Quality''' + " " + "=" + " " + str(Quality_OPC_Line2) + '''
-Availability''' + " " + "=" + " " + str(Availability_Line2))
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+Availability''' + " " + "=" + " " + str(Availability_Line2)}
+            http.post(url, timeout=1, data=data)
     except requests.Timeout:
         pass
-  #      return get_text_messages_line1(OEE_Line2, Performance_OPC_Line2, Quality_OPC_Line2, Availability_Line2,
-     #                                  DateStart_Line2, DateEnd_Line2, 1, User_Line2)
     except requests.ConnectionError:
         logging.error("Error send")
         pass
-   #     return get_text_messages_line1(OEE_Line2, Performance_OPC_Line2, Quality_OPC_Line2, Availability_Line2,
-      #                                 DateStart_Line2, DateEnd_Line2, 1, User_Line2)
     except Exception as e:
         logging.error(e)
         print(e)
         pass
-    #    return get_text_messages_line1(OEE_Line2, Performance_OPC_Line2, Quality_OPC_Line2, Availability_Line2,
-       #                                DateStart_Line2, DateEnd_Line2, 1, User_Line2)
-
 
 def help_line1(Help_OPC_Line1):
     try:
         if Help_OPC_Line1:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
-                                    text="На ПЭТ 1 произошла АВАРИЯ! Оператору требуется помощь инженера!")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
-    # except requests.Timeout:
-    # print("Timeout")
-    # pass
-    #  return help_line1(1)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET1,
+                                    "text":"На ПЭТ 1 произошла АВАРИЯ! Оператору требуется помощь инженера!"}
+            http.post(url, timeout=1, data=data)
     except requests.ConnectionError:
         logging.error("Error send")
-        print("Error")
         pass
-        #return help_line1(1)
     except requests.Timeout:
-        print("Timeout")
+        logging.error("Timeout")
         pass
-        #return help_line1(1)
     except Exception as e:
         logging.error(e)
-        print("Except")
-        print(e)
         pass
-        #return help_line1(1)
-
-
 
 def help_line2(Help_OPC_Line2):
     try:
         if Help_OPC_Line2:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
-                                    text="На ПЭТ 2 произошла АВАРИЯ! Оператору требуется помощь инженера!")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET2,
+                                    "text":"На ПЭТ 2 произошла АВАРИЯ! Оператору требуется помощь инженера!"}
+            http.post(url, timeout=1, data=data)
     except requests.Timeout:
-        print("Timeout")
+        logging.error("Timeout")
         pass
-       # return help_line2(1)
+        #return help_line2(1)
     except requests.ConnectionError:
         logging.error("Error send")
-        print("Error")
         pass
        # return help_line2(1)
     except Exception as e:
         logging.error(e)
-        print("Except")
-        print(e)
         pass
-       # return help_line2(1)
+      #  return help_line2(1)
 
 
 def downtime_line1(Downtime_OPC_Line1, IndexDowntimeMachine_OPC_Line1, count_line1):
@@ -191,60 +163,52 @@ def downtime_line1(Downtime_OPC_Line1, IndexDowntimeMachine_OPC_Line1, count_lin
     try:
         if Downtime_OPC_Line1 and count_line1 == 1:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET3,
-                                    text="На ПЭТ 1 произошла авария" + " " + str(
-                                        machine) + " " + "(длительность аварии 1 минута)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET3,
+                                    "text":"На ПЭТ 1 произошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 1 минута)"}
+            http.post(url, timeout=1, data=data)
 
         elif Downtime_OPC_Line1 and count_line1 == 15:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
-                                    text="На ПЭТ 1 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии 15 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET1,
+                                    "text":"На ПЭТ 1 произошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 15 минут)"}
+            http.post(url, timeout=1, data=data)
 
         elif Downtime_OPC_Line1 and count_line1 == 30:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
-                                    text="На ПЭТ 1 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии 30 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET1,
+                                    "text":"На ПЭТ 1 произошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 30 минут)"}
+            http.post(url, timeout=1, data=data)
         elif Downtime_OPC_Line1 and count_line1 == 60:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
-                                    text="На ПЭТ 1 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительсноть аварии 60 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET1,
+                                    "text":"На ПЭТ 1 произошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 60 минут)"}
+            http.post(url, timeout=1, data=data)
 
         elif Downtime_OPC_Line1 and count_line1 > 60:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET1,
-                                    text="На ПЭТ 1 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии более 60 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
-
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET1,
+                                    "text":"На ПЭТ 1 произошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии более 60 минут)"}
+            http.post(url, timeout=1, data=data)
 
     except requests.Timeout:
-        print("Timeout")
+        logging.error("Timeout")
         pass
-     #   return downtime_line1(1, IndexDowntimeMachine_OPC_Line1, count_line1)
     except requests.ConnectionError:
         logging.error("Error send")
-        print("Error")
         pass
-      #  return downtime_line1(1, IndexDowntimeMachine_OPC_Line1, count_line1)
     except Exception as e:
         logging.error(e)
-        print("Except")
-        print(e)
         pass
-       # return downtime_line1(1, IndexDowntimeMachine_OPC_Line1, count_line1)
-
 
 def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_line2):
     switcher_line2 = {
@@ -258,59 +222,52 @@ def downtime_line2(Downtime_OPC_Line2, IndexDowntimeMachine_OPC_Line2, count_lin
     try:
         if Downtime_OPC_Line2 and count_line2 == 1:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET3,
-                                    text="На ПЭТ 2 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии 1 минута)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy )
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET3,
+                                    "text":"На ПЭТ 2 поизошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 1 минута)"}
+            http.post(url, timeout=1, data=data)
 
         elif Downtime_OPC_Line2 and count_line2 == 15:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
-                                    text="На ПЭТ 2 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии 15 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET2,
+                                    "text":"На ПЭТ 2 поизошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 15 минут)"}
+            http.post(url, timeout=1, data=data)
 
         elif Downtime_OPC_Line2 and count_line2 == 30:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
-                                    text="На ПЭТ 2 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительсноть аварии 30 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET2,
+                                    "text":"На ПЭТ 2 поизошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 30 минут)"}
+            http.post(url, timeout=1, data=data)
         elif Downtime_OPC_Line2 and count_line2 == 60:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
-                                    text="На ПЭТ 2 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии 60 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET2,
+                                    "text":"На ПЭТ 2 поизошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии 60 минут)"}
+            http.post(url, timeout=1, data=data)
 
         elif Downtime_OPC_Line2 and count_line2 > 60:
             method = "sendMessage"
-            url = "https://api.telegram.org/bot{bot}/{sendMessage}"
-            data = bot.send_message(chat_id=CHANNEL_NAME_PET2,
-                                    text="На ПЭТ 2 поизошла авария" + " " + str(
-                                        machine) + " " + "(Длительность аварии более 60 минут)")
-            requests.post(url, timeout=1, proxies=apihelper.proxy)
+            url = f"https://api.telegram.org/bot{token}/{method}"
+            data = {"chat_id":CHANNEL_NAME_PET2,
+                                    "text":"На ПЭТ 2 поизошла авария" + " " + str(
+                                        machine) + " " + "(Длительность аварии более 60 минут)"}
+            http.post(url, timeout=1, data=data)
 
     except requests.Timeout:
-        print("Timeout")
+        logging.error("Timeout")
         pass
-      #  return downtime_line2(1, IndexDowntimeMachine_OPC_Line2, count_line2)
     except requests.ConnectionError:
         logging.error("Error send")
-        print("Error")
         pass
-       # return downtime_line2(1, IndexDowntimeMachine_OPC_Line2, count_line2)
     except Exception as e:
         logging.error(e)
-        print("Except")
-        print(e)
         pass
-        #return downtime_line2(1, IndexDowntimeMachine_OPC_Line2, count_line2)
-
 
 @app.route("/", methods=["GET", "POST"])
 def receive_update():
@@ -320,7 +277,6 @@ def receive_update():
     return {"ok": True}
 
 class new_value():
-
     def __init__(self):
         # OPC
         self.dateprev = ()
@@ -375,7 +331,6 @@ class new_value():
         t4.start()
         t5 = Thread(target=self.th, args=(), name='restart')
         t5.start()
-
 
     def opc(self):
         while True:
@@ -448,7 +403,6 @@ class new_value():
 
             finally:
                 client.disconnect()
-
 
     def check_new_value(self):
         while True:
@@ -525,7 +479,7 @@ class new_value():
                 self.four_line1 = 0
                 self.five_line1 = 0
 
-            # get json + setebhook
+            # get json + setwebhook
             if not self.get_json_ and self.get_json_two_try < 2:
                 self.get_json_two_try += 1
                 print (self.get_json_two_try)
@@ -535,16 +489,16 @@ class new_value():
                     api_response = api_result.json()
                     print (api_response)
                     if api_response['tunnels'][0]['proto'] == "https":
-                        setebhook_https = "https://api.telegram.org/bot{bot}/setWebhook?url=" + (
+                        setebhook_https = f"https://api.telegram.org/bot{token}/setWebhook?url=" + (
                         api_response['tunnels'][0]['public_url'])
                         print(api_response['tunnels'][0]['proto'])
-                        requests.post(setebhook_https, timeout=5, proxies=apihelper.proxy)
+                        requests.post(setebhook_https, timeout=5)
                         print (setebhook_https)
                     else:
-                        setebhook_http = "https://api.telegram.org/bot{bot}/setWebhook?url=" + (
+                        setebhook_http = f"https://api.telegram.org/bot{token}/setWebhook?url=" + (
                             api_response['tunnels'][1]['public_url'])
                         print(api_response['tunnels'][0]['proto'])
-                        requests.post(setebhook_http, timeout=5, proxies=apihelper.proxy)
+                        requests.post(setebhook_http, timeout=5)
                         print (setebhook_http)
                     self.get_json_ = 1
                     time.sleep(60)
@@ -557,7 +511,6 @@ class new_value():
                     print (json)
                     time.sleep(60)
                     pass
-
 
     # Check change value OPC line2
     def check_new_value_line_2(self):
@@ -577,10 +530,10 @@ class new_value():
 
             # Update Value Line 2
             if ValueChange_Line2:
-                OEE_Line2 = float('{:.2f}'.format(self.OEE_OPC_line2))
-                Availability_Line2 = float('{:.2f}'.format(self.Availability_OPC_line2))
-                Performance_Line2 = float('{:.2f}'.format(self.Performance_OPC_line2))
-                Quality_Line2 = float('{:.2f}'.format(self.Quality_OPC_line2))
+                OEE_Line2 = float('{:.2f}'.format(self.OEE_OPC_Line2))
+                Availability_Line2 = float('{:.2f}'.format(self.Availability_OPC_Line2))
+                Performance_Line2 = float('{:.2f}'.format(self.Performance_OPC_Line2))
+                Quality_Line2 = float('{:.2f}'.format(self.Quality_OPC_Line2))
                 DateStart_Line2 = date_Line2
                 DateEnd_Line2 = dateEnd_Line2
                 User_line2 = self.user_OPC_Line2
@@ -684,4 +637,5 @@ class new_value():
                 time.sleep(60)
             except:
                 print ("Error_line2")
+
 new_value()
