@@ -15,7 +15,6 @@
 ```
 url = "opc.tcp://10.4.37.2:4840 (You OPC UA Server)"
 client = Client(url)
-
 ```
 ### Telegram
 
@@ -26,6 +25,5 @@ CHANNEL_NAME_PET1 = '@YouChannel_1'
 CHANNEL_NAME_PET2 = '@YouChannel_2'
 CHANNEL_NAME_PET3 = '@YouChannel_3'
 token = 'YouToken'
-
 ```
 
