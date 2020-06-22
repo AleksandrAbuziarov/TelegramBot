@@ -75,7 +75,7 @@ OEE''' + " " + "=" + " " + str(OEE) + '''
 Performance''' + " " + "=" + " " + str(Performance) + '''
 Quality''' + " " + "=" + " " + str(Quality) + '''
 Availability''' + " " + "=" + " " + str(Availability)}
-            http.post(url, timeout=1, data=data) #, proxies = apihelper.proxy
+            http.post(url, timeout=1, data=data) #, proxies = apihelper.proxy - if you need a proxy
     except requests.Timeout:
         pass
     except requests.ConnectionError:
