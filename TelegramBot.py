@@ -577,10 +577,10 @@ class new_value():
 
             # Update Value Line 2
             if ValueChange_Line2:
-                OEE_Line2 = float('{:.2f}'.format(self.OEE_OPC))
-                Availability_Line2 = float('{:.2f}'.format(self.Availability_OPC))
-                Performance_Line2 = float('{:.2f}'.format(self.Performance_OPC))
-                Quality_Line2 = float('{:.2f}'.format(self.Quality_OPC))
+                OEE_Line2 = float('{:.2f}'.format(self.OEE_OPC_line2))
+                Availability_Line2 = float('{:.2f}'.format(self.Availability_OPC_line2))
+                Performance_Line2 = float('{:.2f}'.format(self.Performance_OPC_line2))
+                Quality_Line2 = float('{:.2f}'.format(self.Quality_OPC_line2))
                 DateStart_Line2 = date_Line2
                 DateEnd_Line2 = dateEnd_Line2
                 User_line2 = self.user_OPC_Line2
