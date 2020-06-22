@@ -11,14 +11,21 @@
 - Составляение и отправка мини отчетов раз в производственную смену
 - Логгирование
 ## Настройка
-### Paramms OPC
-```url = "opc.tcp://10.4.37.2:4840 (You OPC UA Server)"
+### OPC
+```
+url = "opc.tcp://10.4.37.2:4840 (You OPC UA Server)"
 client = Client(url)
-### Paramms Telegram
+
+```
+### Telegram
+
+```
 CHANNEL_NAME1 = '@YouChannel_0'
 apihelper.proxy = {'https': 'https://login:pass@ip:port'}
 CHANNEL_NAME_PET1 = '@YouChannel_1'
 CHANNEL_NAME_PET2 = '@YouChannel_2'
 CHANNEL_NAME_PET3 = '@YouChannel_3'
 token = 'YouToken'
+
 ```
+
